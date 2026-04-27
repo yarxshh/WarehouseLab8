@@ -38,20 +38,30 @@ namespace Warehouse.ConsoleUI
 
             try
             {
+                SearchEngine engine = new SearchEngine();
 
                 DisplayAllCategories(allCategories);
+                string catToRemove = "Інструменти";
+                var categoryToRemove = allCategories.First(c => c.Name == catToRemove);
+                allCategories.Remove(categoryToRemove);
+                Console.WriteLine($"Категорію '{categoryToRemove.Name}' видалено.");
+                DisplayAllCategories(allCategories);
 
-                Console.WriteLine("\nПостачальники");
+                Console.WriteLine("\n~~~Постачальники~~~");
                 string sortOrderSuplier = "Ім'я";  // Ім'я Прізвище
-                DisplaySuppliers(allSuppliers, sortOrderSuplier); 
+                DisplaySuppliers(allSuppliers, sortOrderSuplier);
 
                 Console.WriteLine("\nСортування товарів(електроніка):");
-                string sortOrderProduct = "Ціна";  // Назва Бренд Ціна
-                DisplayProducts(pcCategory, sortOrderProduct);  
+                string sortOrderProduct = "Бренд";  // Назва Бренд Ціна
+                DisplayProducts(pcCategory, sortOrderProduct);
+                string prodToRemove = "Мишка";
+                var productToRemove = pcCategory.Products.First(d => d.Name == prodToRemove);
+                pcCategory.RemoveProduct(productToRemove);
+                Console.WriteLine($"Товар '{productToRemove.Name}' видалено.");
+                DisplayProducts(pcCategory, sortOrderProduct);
 
                 string productToFind = "Dell";
                 Console.WriteLine($"\nПошук товарів({productToFind}):");
-                SearchEngine engine = new SearchEngine();
                 var foundProducts = engine.SearchProducts(pcCategory.Products, productToFind);
                 foreach (var p in foundProducts) Console.WriteLine($"- Знайдено: {p.Name} {p.Brand}");
 
@@ -65,6 +75,10 @@ namespace Warehouse.ConsoleUI
 
             }
             catch (EntityNotFoundException ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+            }
+            catch (InvalidOperationException ex)
             {
                 Console.WriteLine($"{ex.Message}");
             }
